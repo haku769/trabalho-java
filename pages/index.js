@@ -8,17 +8,14 @@ const usuario = [];
 
 const router = express.Router();
 router.get('/api/usuario', (req, res) => {  
-    console.log('entrou no get');
     res.status(200).json(usuario);
 });
 router.post('/api/usuario', (req, res) => {  
     console.log('entrou no post');
     console.log(req.body);
-
-    var usuario = req.body;
-    usuario.id = 1;
-
-    usuario.push(usuario);
+    var NovoUsuario = req.body;
+    novoUsuario.id = 1;
+    novoUsuario.push(usuario);
     res.status(201).json(usuario);
 });
 

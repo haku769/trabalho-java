@@ -2,7 +2,6 @@ const modal = document.querySelector('.modal-container')
 const tbody = document.querySelector('tbody')
 const sNome = document.querySelector('#m-nome')
 const sCPF = document.querySelector('#m-CPF')
-const sTelefone = document.querySelector('#m-Telefone')
 const sEmail = document.querySelector('#m-Email')
 const btnSalvar = document.querySelector('#btnSalvar')
 
@@ -21,13 +20,11 @@ function openModal(edit = false, index = 0) {
   if (edit) {
     sNome.value = itens[index].nome
     sCPF.value = itens[index].sCPF
-    sTelefone.value = itens[index].sTelefone
     sEmail.value = itens[index].sEmail
     id = index
   } else {
     sNome.value = ''
     sCPF.value = ''
-    sTelefone.value = ''
     sEmail.value = ''
   }
   
@@ -50,7 +47,6 @@ function insertItem(item, index) {
   tr.innerHTML = `
     <td>${item.nome}</td>
     <td>${item.sCPF}</td>
-    <td>${item.sTelefone}</td>
     <td>${item.sEmail}</td>
     <td class="acao">
       <button onclick="editItem(${index})"><i class='bx bx-edit' ></i></button>
@@ -64,7 +60,7 @@ function insertItem(item, index) {
 
 btnSalvar.onclick = e => {
   
-  if (sNome.value == '' || sCPF.value == '' || sTelefone.value == ''|| sEmail.value == '') {
+  if (sNome.value == '' || sCPF.value == '' ||  sEmail.value == '') {
     return
   }
 
@@ -73,10 +69,9 @@ btnSalvar.onclick = e => {
   if (id !== undefined) {
     itens[id].nome = sNome.value
     itens[id].sCPF = sCPF.value
-    itens[id].sTelefone = sTelefone.value
     itens[id].sEmail = sEmail.value
   } else {
-    itens.push({'nome': sNome.value, 'CPF': sCPF.value, 'Telefone': sTelefone.value,'Email': sEmail.value})
+    itens.push({'nome': sNome.value, 'CPF': sCPF.value,'Email': sEmail.value})
   }
 
   setItensBD()

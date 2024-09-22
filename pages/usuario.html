@@ -6,15 +6,42 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CRUD</title>
-  <link rel="stylesheet" href="usuario.css">
+  <link rel="stylesheet" href="/pages/usuario.css">
   <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <script>
+    const salvar = async () => {
+        const Nome = document.getElementById('m-nome').value;
+        const CPF = document.getElementById('m-CPF').value;
+        const Email = document.getElementById('m-Email').value;
+
+        console.log("chamou o salvar");
+        console.log(Nome);
+        console.log(CPF);
+        console.log(Email);
+
+        const data = {
+              Nome: nome,
+              CPF:CPF,
+              email: email  
+        };
+        const response = await fetch(`http://localhost:5501/api/usuario`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        console.log(result);
+    }        
+</script>
 </head>
 
 <body>
   <div class="container">
     <div class="header">
       <span>Cadastro de Usuários</span>
-      <button onclick="openModal()" id="new">Incluir</i></button>
+      <button onclick="openModal()" id="new">Salvar</button>
     </div>
 
     <div class="divTable">
@@ -23,7 +50,6 @@
           <tr>
             <th>Nome</th>
             <th>CPF</th>
-            <th>Telefone</th>
             <th>Email</th>
             <th class="acao">Editar</th>
             <th class="acao">Excluir</th>
@@ -42,18 +68,16 @@
   
           <label for="m-CPF">CPF</label>
           <input id="m-CPF" type="number" required />
-  
-          <label for="m-Telefone">Telefone</label>
-          <input id="m-Telefone" type="number" required />
+
           <label for="m-Email">Email</label>
           <input id="m-Email" type="text" required />
-          <button id="btnSalvar">Salvar</button>
+          <button onclick="salvar()" id="btnSalvar">Salvar</button>
         </form>
       </div>
     </div>
 
   </div>
-  <script src="usuario.js"></script>
+  <script src="/pages/usuario.js"></script>
 </body>
 
 </html>
