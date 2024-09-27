@@ -4,19 +4,20 @@ app.use(express.json());
 
 app.use(express.static('./pages'));
 
-const usuario = [];
+const usuarios = [];
 
 const router = express.Router();
 router.get('/api/usuario', (req, res) => {  
-    res.status(200).json(usuario);
+    res.status(200).json(usuarios);
 });
 router.post('/api/usuario', (req, res) => {  
     console.log('entrou no post');
     console.log(req.body);
-    var NovoUsuario = req.body;
-    novoUsuario.id = 1;
-    novoUsuario.push(usuario);
-    res.status(201).json(usuario);
+
+    var novoUsuario = req.body;
+    novoUsuario.id = usuarios.length + 1;
+    usuarios.push(novoUsuario);
+    res.status(201).json(novoUsuario);
 });
 
 app.use(router);
