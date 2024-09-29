@@ -1,83 +1,85 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUD</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"
+    />
+    <link rel="stylesheet" href="/pages/usuario.css" />
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRUD</title>
-  <link rel="stylesheet" href="/pages/usuario.css">
-  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    />
+  </head>
+
   <script>
     const salvar = async () => {
-        const Nome = document.getElementById('m-nome').value;
-        const CPF = document.getElementById('m-CPF').value;
-        const Email = document.getElementById('m-Email').value;
+      const Nome = document.getElementById("m-nome").value;
+      const CPF = document.getElementById("m-CPF").value;
+      const Email = document.getElementById("m-Email").value;
 
-        console.log("chamou o salvar");
-        console.log(Nome);
-        console.log(CPF);
-        console.log(Email);
+      console.log("chamou o salvar");
+      console.log(Nome);
+      console.log(CPF);
+      console.log(Email);
 
-        const data = {
-              Nome: nome,
-              CPF:CPF,
-              email: email  
-        };
-        const response = await fetch(`http://localhost:5501/api/usuario`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
-        const result = await response.json();
-        console.log(result);
-    }        
-</script>
-</head>
+      const data = {
+        Nome: nome,
+        CPF: CPF,
+        email: email,
+      };
+      const response = await fetch(`http://localhost:5501/api/usuario`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      console.log(result);
+    };
+  </script>
 
-<body>
-  <div class="container">
-    <div class="header">
-      <span>Cadastro de Usuários</span>
-      <button onclick="openModal()" id="new">Salvar</button>
-    </div>
+  <body>
+    <div class="container">
+      <div class="header">
+        <span>Cadastro de Usuários</span>
+        <button onclick="openModal()" id="new">Salvar</button>
+      </div>
 
-    <div class="divTable">
-      <table>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>CPF</th>
-            <th>Email</th>
-            <th class="acao">Editar</th>
-            <th class="acao">Excluir</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-    </div>
+      <div class="divTable">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Email</th>
+              <th class="acao">Editar</th>
+              <th class="acao">Excluir</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
-    <div class="modal-container">
-      <div class="modal">
-        <form>
-          <label for="m-nome">Nome</label>
-          <input id="m-nome" type="text" required />
-  
-          <label for="m-CPF">CPF</label>
-          <input id="m-CPF" type="number" required />
+      <div class="modal-container">
+        <div class="modal">
+          <form>
+            <label for="m-nome">Nome</label>
+            <input id="m-nome" type="text" required />
 
-          <label for="m-Email">Email</label>
-          <input id="m-Email" type="text" required />
-          <button onclick="salvar()" id="btnSalvar">Salvar</button>
-        </form>
+            <label for="m-CPF">CPF</label>
+            <input id="m-CPF" type="number" required />
+
+            <label for="m-Email">Email</label>
+            <input id="m-Email" type="text" required />
+            <button onclick="salvar()" id="btnSalvar">Salvar</button>
+          </form>
+        </div>
       </div>
     </div>
-
-  </div>
-  <script src="/pages/usuario.js"></script>
-</body>
-
+    <script src="/pages/usuario.js"></script>
+  </body>
 </html>

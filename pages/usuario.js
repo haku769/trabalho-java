@@ -7,6 +7,23 @@ const btnSalvar = document.querySelector('#btnSalvar')
 
 let itens
 let id
+const carregarUsuario = async (id) => {
+  try {
+    const response = await fetch(`http://localhost:5501/api/usuarios`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    const usuario = await response.json();
+    
+    sNome.value = usuario.nome;
+    sCPF.value = usuario.CPF;
+    sEmail.value = usuario.Email;
+  } catch (error) {
+    console.error('Erro ao carregar o usuário:', error);
+  }
+}
 
 function openModal(edit = false, index = 0) {
   modal.classList.add('active')
@@ -19,8 +36,8 @@ function openModal(edit = false, index = 0) {
 
   if (edit) {
     sNome.value = itens[index].nome
-    sCPF.value = itens[index].sCPF
-    sEmail.value = itens[index].sEmail
+    sCPF.value = itens[index].CPF
+    sEmail.value = itens[index].Email
     id = index
   } else {
     sNome.value = ''
@@ -46,8 +63,8 @@ function insertItem(item, index) {
 
   tr.innerHTML = `
     <td>${item.nome}</td>
-    <td>${item.sCPF}</td>
-    <td>${item.sEmail}</td>
+    <td>${item.CPF}</td>
+    <td>${item.Email}</td>
     <td class="acao">
       <button onclick="editItem(${index})"><i class='bx bx-edit' ></i></button>
     </td>
@@ -58,28 +75,54 @@ function insertItem(item, index) {
   tbody.appendChild(tr)
 }
 
-btnSalvar.onclick = e => {
-  
-  if (sNome.value == '' || sCPF.value == '' ||  sEmail.value == '') {
-    return
-  }
-
+btnSalvar.onclick = async (e) => {
   e.preventDefault();
 
-  if (id !== undefined) {
-    itens[id].nome = sNome.value
-    itens[id].sCPF = sCPF.value
-    itens[id].sEmail = sEmail.value
-  } else {
-    itens.push({'nome': sNome.value, 'CPF': sCPF.value,'Email': sEmail.value})
+  if (sNome.value === '' || sCPF.value === '' || sEmail.value === '') {
+    return;
   }
 
-  setItensBD()
+  const user = {
+    nome: sNome.value,
+    CPF: sCPF.value,
+    Email: sEmail.value,
+  };
 
-  modal.classList.remove('active')
-  loadItens()
-  id = undefined
-}
+  // Se estiver editando um item existente
+  if (id !== undefined) {
+    itens[id].nome = sNome.value;
+    itens[id].CPF = sCPF.value;
+    itens[id].Email = sEmail.value;
+
+    // Aqui você faria uma requisição PUT ou PATCH para atualizar o registro no backend
+    await fetch('http://localhost:5501/api/usuario/${id}', {
+      method: 'PUT', // ou PATCH
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(user),
+    });
+
+  } else {
+    // Se estiver criando um novo item
+    itens.push(user);
+
+    // Chamada para a API com POST para salvar no backend
+    await fetch('http://localhost:5501/api/usuario', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(user),
+    });
+  }
+
+  setItensBD();
+  modal.classList.remove('active');
+  loadItens();
+  id = undefined;
+};
+
 
 function loadItens() {
   itens = getItensBD()
