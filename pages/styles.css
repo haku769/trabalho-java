@@ -75,3 +75,68 @@ footer {
     width: 100%;
 }
 
+
+.links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .image-container {
+    position: relative; /* Contêiner relativo para posicionar o botão */
+    width: 600px; /* Largura da imagem */
+    height: 800px; /* Altura da imagem */
+  }
+  
+  .image-container img {
+    width: 100%; /* Faz com que a imagem ocupe toda a largura do contêiner */
+    height: 100%; /* Faz com que a imagem ocupe toda a altura do contêiner */
+    object-fit: cover; /* Ajusta a imagem para cobrir o contêiner sem distorção */
+    display: block;
+  }
+  
+  .image-container button {
+    position: absolute;
+    bottom: 10px; /* Posiciona o botão 10px acima da parte inferior da imagem */
+    left: 50%; /* Posiciona o botão no centro horizontalmente */
+    transform: translateX(-50%); /* Ajusta o posicionamento para centralizar corretamente */
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo semitransparente para destacar o botão */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 35px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .image-container button:hover {
+    background-color: #456fbf; /* Cor de fundo ao passar o mouse */
+
+
+
+     /* imagem de fundo*/
+  }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-image: url('/images/fundobike.jpg'); /* Caminho da imagem de fundo */
+    background-size: cover; /* Faz com que a imagem cubra toda a área da página */
+    background-position: center; /* Centraliza a imagem de fundo */
+    background-attachment: fixed; /* Faz com que a imagem de fundo não role com a página */
+    background-repeat: no-repeat; /* Impede que a imagem se repita */
+    color: #fff; /* Cor do texto */
+}
+
+header, footer {
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo semitransparente para facilitar a leitura */
+}
+
+main {
+    padding: 2em;
+    background-color: rgba(255, 255, 255, 0.8); /* Fundo semitransparente para melhorar a legibilidade */
+    border-radius: 8px;
+}
