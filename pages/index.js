@@ -1,21 +1,24 @@
 var express = require("express");
 var app = express();
-var mysql = require('mysql');
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "yourusername",
-  password: "yourpassword"
-  });
-  con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-  });
-  
+
 const cors = require("cors");
 app.use(express.json());
 app.use(cors());
 
 app.use(express.static("./pages"));
+var mysql = require('mysql');
+
+var con = mysql.createConnection({
+  host: "localhost:5501",
+  user: "root",
+  password: "PUC@1234"
+});
+
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
 
 const usuarios = [];
 

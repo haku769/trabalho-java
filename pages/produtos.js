@@ -1,13 +1,47 @@
 const modal = document.querySelector(".modal-container");
 const tbody = document.querySelector("tbody");
 const sNome = document.querySelector("#m-Nome");
-const sTipo = document.querySelector("#m-Tipo");
+const sCategoria = document.querySelector("#m-Categoria");
 const sDescricao = document.querySelector("#m-Descricao");
 const btnSalvar = document.querySelector("#btnSalvar");
 
-let itens;
-let id;
+let itens = [];
+let id = null;
 
+// Função genérica para chamadas de API
+const apiRequest = async (url, method, body = null) => {
+  try {
+    const options = {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    if (body) {
+      options.body = JSON.stringify(body);
+    }
+    const response = await fetch(url, options);
+    return await response.json();
+  } catch (error) {
+    console.error(`Erro na requisição ${method} para ${url}:`, error);
+    throw error;
+  }
+};
+
+// Função para carregar os itens da API
+const loadItens = async () => {
+  try {
+    itens = await apiRequest('http://localhost:5501/api/produtos', 'GET');
+    tbody.innerHTML = '';
+    itens.forEach((item, index) => {
+      insertItem(item, index);
+    });
+  } catch (error) {
+    console.error('Erro ao carregar itens:', error);
+  }
+};
+
+// Função para abrir o modal (para criar ou editar)
 function openModal(edit = false, index = 0) {
   modal.classList.add("active");
 
@@ -18,36 +52,27 @@ function openModal(edit = false, index = 0) {
   };
 
   if (edit) {
-    sNome.value = itens[index].nome 
-    sTipo.value = itens[index].tipo 
-    sDescricao.value = itens[index].descricao
-    id = index;
+    sNome.value = itens[index].nome;
+    sCategoria.value = itens[index].Categoria;
+    sDescricao.value = itens[index].descricao;
+    id = itens[index].id; // Mantém o ID do item para edição
   } else {
     sNome.value = "";
-    sTipo.value = "";
+    sCategoria.value = "";
     sDescricao.value = "";
+    id = null; // Novo item
   }
 }
 
-function editItem(index) {
-  openModal(true, index);
-}
-
-function deleteItem(index) {
-  itens.splice(index, 1);
-  setItensBD();
-  loadItens();
-}
-
+// Função para inserir um item no DOM
 function insertItem(item, index) {
-  let tr = document.createElement("tr");
-
+  const tr = document.createElement("tr");
   tr.innerHTML = `
     <td>${item.nome}</td>
-    <td>${item.tipo}</td>
+    <td>${item.Categoria}</td>
     <td>${item.descricao}</td>
     <td class="acao">
-      <button onclick="editItem(${index})"><i class='bx bx-edit' ></i></button>
+      <button onclick="editItem(${index})"><i class='bx bx-edit'></i></button>
     </td>
     <td class="acao">
       <button onclick="deleteItem(${index})"><i class='bx bx-trash'></i></button>
@@ -56,44 +81,55 @@ function insertItem(item, index) {
   tbody.appendChild(tr);
 }
 
-btnSalvar.onclick = (e) => {
+// Função para salvar (criar ou editar) um item
+btnSalvar.onclick = async (e) => {
   e.preventDefault();
 
-  if (sNome.value === "" || sTipo.value === "" || sDescricao.value === "") {
-    console.error("Todos os campos precisam ser preenchidos.");
+  // Validação dos campos
+  if (sNome.value === "" || sCategoria.value === "" || sDescricao.value === "") {
+    alert("Preencha todos os campos.");
     return;
   }
 
-  if (id !== undefined) {
-    itens[id].nome = sNome.value;
-    itens[id].tipo = sTipo.value;
-    itens[id].descricao = sDescricao.value;
-  } else {
-    itens.push({
-      nome: sNome.value,
-      tipo: sTipo.value,
-      descricao: sDescricao.value,
-    });
+  const item = {
+    nome: sNome.value,
+    categoria: sCategoria.value,
+    descricao: sDescricao.value,
+  };
+
+  try {
+    if (id !== null) {
+      // Atualizar item existente
+      await apiRequest(`http://localhost:5501/api/produtos/${id}`, 'PUT', item);
+      itens = itens.map((i) => (i.id === id ? item : i)); // Atualiza localmente
+    } else {
+      // Criar novo item
+      const newItem = await apiRequest('http://localhost:5501/api/produtos', 'POST', item);
+      itens.push(newItem); // Adiciona o novo item retornado
+    }
+
+    modal.classList.remove("active");
+    loadItens(); // Recarrega os itens
+  } catch (error) {
+    alert("Ocorreu um erro ao salvar o item.");
   }
-
-  setItensBD();
-
-  modal.classList.remove("active");
-
-  loadItens();
-
-  id = undefined;
 };
 
-function loadItens() {
-  itens = getItensBD();
-  tbody.innerHTML = "";
-  itens.forEach((item, index) => {
-    insertItem(item, index);
-  });
+// Função para deletar um item
+async function deleteItem(index) {
+  try {
+    await fetch(`http://localhost:5501/api/produtos/${itens[index].id}`, { method: 'DELETE' });
+    itens.splice(index, 1); // Remove localmente
+    loadItens();
+  } catch (error) {
+    console.error("Erro ao deletar o item:", error);
+  }
 }
 
-const getItensBD = () => JSON.parse(localStorage.getItem("dbfunc")) ?? [];
-const setItensBD = () => localStorage.setItem("dbfunc", JSON.stringify(itens));
+// Função para editar um item (abrir o modal com o item para edição)
+function editItem(index) {
+  openModal(true, index);
+}
 
+// Carregar os itens ao iniciar a página
 loadItens();
