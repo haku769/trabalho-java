@@ -1,21 +1,42 @@
-const modal = document.querySelector('.modal-container')
-const tbody = document.querySelector('tbody')
-const sNome = document.querySelector('#m-nome')
-const sCPF = document.querySelector('#m-CPF')
-const sEmail = document.querySelector('#m-Email')
-const btnSalvar = document.querySelector('#btnSalvar')
+const modal = document.querySelector('.modal-container');
+const tbody = document.querySelector('tbody');
+const sNome = document.querySelector('#m-nome');
+const sCPF = document.querySelector('#m-CPF');
+const sEmail = document.querySelector('#m-Email');
+const btnSalvar = document.querySelector('#btnSalvar');
 
-let itens
-let id
+let itens = [];
+let id = null;
+
+// Função genérica para chamadas de API
+const apiRequest = async (url, method, body = null) => {
+  try {
+    const options = {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    if (body) {
+      options.body = JSON.stringify(body);
+    }
+    const response = await fetch(url, options);
+    return await response.json();
+  } catch (error) {
+    console.error(`Erro na requisição ${method} para ${url}:`, error);
+    throw error; // Propaga o erro para tratamento
+  }
+};
+
+// Validação simples de CPF (apenas formato)
+const isValidCPF = cpf => /^\d{11}$/.test(cpf);
+
+// Validação simples de Email
+const isValidEmail = email => /\S+@\S+\.\S+/.test(email);
+
 const carregarUsuario = async (id) => {
   try {
-    const response = await fetch(`http://localhost:5501/api/usuarios`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
-    const usuario = await response.json();
+    const usuario = await apiRequest(`http://localhost:5501/api/usuarios`, 'GET');
     
     sNome.value = usuario.nome;
     sCPF.value = usuario.CPF;
@@ -23,43 +44,42 @@ const carregarUsuario = async (id) => {
   } catch (error) {
     console.error('Erro ao carregar o usuário:', error);
   }
-}
+};
 
 function openModal(edit = false, index = 0) {
-  modal.classList.add('active')
+  modal.classList.add('active');
 
   modal.onclick = e => {
     if (e.target.className.indexOf('modal-container') !== -1) {
-      modal.classList.remove('active')
+      modal.classList.remove('active');
     }
-  }
+  };
 
   if (edit) {
-    sNome.value = itens[index].nome
-    sCPF.value = itens[index].CPF
-    sEmail.value = itens[index].Email
-    id = index
+    sNome.value = itens[index].nome;
+    sCPF.value = itens[index].CPF;
+    sEmail.value = itens[index].Email;
+    id = index;
   } else {
-    sNome.value = ''
-    sCPF.value = ''
-    sEmail.value = ''
+    sNome.value = '';
+    sCPF.value = '';
+    sEmail.value = '';
+    id = null;
   }
-  
 }
 
 function editItem(index) {
-
-  openModal(true, index)
+  openModal(true, index);
 }
 
 function deleteItem(index) {
-  itens.splice(index, 1)
-  setItensBD()
-  loadItens()
+  itens.splice(index, 1);
+  setItensBD();
+  loadItens();
 }
 
 function insertItem(item, index) {
-  let tr = document.createElement('tr')
+  let tr = document.createElement('tr');
 
   tr.innerHTML = `
     <td>${item.nome}</td>
@@ -71,14 +91,26 @@ function insertItem(item, index) {
     <td class="acao">
       <button onclick="deleteItem(${index})"><i class='bx bx-trash'></i></button>
     </td>
-  `
-  tbody.appendChild(tr)
+  `;
+  tbody.appendChild(tr);
 }
 
 btnSalvar.onclick = async (e) => {
   e.preventDefault();
 
+  // Validação dos campos
   if (sNome.value === '' || sCPF.value === '' || sEmail.value === '') {
+    alert('Preencha todos os campos.');
+    return;
+  }
+
+  if (!isValidCPF(sCPF.value)) {
+    alert('CPF inválido. Deve conter 11 dígitos.');
+    return;
+  }
+
+  if (!isValidEmail(sEmail.value)) {
+    alert('Email inválido.');
     return;
   }
 
@@ -88,52 +120,53 @@ btnSalvar.onclick = async (e) => {
     Email: sEmail.value,
   };
 
-  // Se estiver editando um item existente
-  if (id !== undefined) {
-    itens[id].nome = sNome.value;
-    itens[id].CPF = sCPF.value;
-    itens[id].Email = sEmail.value;
+  try {
+    if (id !== null) {
+      // Atualizar item existente
+      itens[id] = user;
+      await apiRequest(`http://localhost:5501/api/usuario/${id}`, 'PUT', user);
+    } else {
+      // Criar novo item
+      itens.push(user);
+      await apiRequest('http://localhost:5501/api/usuario', 'POST', user);
+    }
 
-    // Aqui você faria uma requisição PUT ou PATCH para atualizar o registro no backend
-    await fetch('http://localhost:5501/api/usuario/${id}', {
-      method: 'PUT', // ou PATCH
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(user),
-    });
-
-  } else {
-    // Se estiver criando um novo item
-    itens.push(user);
-
-    // Chamada para a API com POST para salvar no backend
-    await fetch('http://localhost:5501/api/usuario', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(user),
-    });
+    setItensBD();
+    modal.classList.remove('active');
+    loadItens();
+    id = null;
+  } catch (error) {
+    alert('Ocorreu um erro ao salvar o usuário.');
   }
-
-  setItensBD();
-  modal.classList.remove('active');
-  loadItens();
-  id = undefined;
 };
 
-
 function loadItens() {
-  itens = getItensBD()
-  tbody.innerHTML = ''
-  itens.forEach((item, index) => {
-    insertItem(item, index)
-  })
-
+  try {
+    itens = getItensBD();
+    tbody.innerHTML = '';
+    itens.forEach((item, index) => {
+      insertItem(item, index);
+    });
+  } catch (error) {
+    console.error('Erro ao carregar itens:', error);
+  }
 }
 
-const getItensBD = () => JSON.parse(localStorage.getItem('dbfunc')) ?? []
-const setItensBD = () => localStorage.setItem('dbfunc', JSON.stringify(itens))
+const getItensBD = () => {
+  try {
+    return JSON.parse(localStorage.getItem('dbfunc')) ?? [];
+  } catch (error) {
+    console.error('Erro ao acessar o banco de dados local:', error);
+    return [];
+  }
+};
 
-loadItens()
+const setItensBD = () => {
+  try {
+    localStorage.setItem('dbfunc', JSON.stringify(itens));
+  } catch (error) {
+    console.error('Erro ao salvar no banco de dados local:', error);
+  }
+};
+
+loadItens();
