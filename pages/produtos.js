@@ -9,21 +9,12 @@ let itens = [];
 let id = null;
 
 // Função genérica para chamadas de API
-const apiRequest = async (url, method, body = null) => {
+const apiRequest = async (url, method, body) => {
   try {
-    const options = {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-    if (body) {
-      options.body = JSON.stringify(body);
-    }
-    const response = await fetch(url, options);
+    const response = await fetch(url, { method, body: body ? JSON.stringify(body) : undefined });
     return await response.json();
   } catch (error) {
-    console.error(`Erro na requisição ${method} para ${url}:`, error);
+    console.error('Erro   na requisição:', error);
     throw error;
   }
 };
@@ -31,7 +22,7 @@ const apiRequest = async (url, method, body = null) => {
 // Função para carregar os itens da API
 const loadItens = async () => {
   try {
-    itens = await apiRequest('http://localhost:5501/api/produtos', 'GET');
+    itens = await apiRequest('http://localhost:5502/api/produtos', 'GET');
     tbody.innerHTML = '';
     itens.forEach((item, index) => {
       insertItem(item, index);
@@ -100,11 +91,11 @@ btnSalvar.onclick = async (e) => {
   try {
     if (id !== null) {
       // Atualizar item existente
-      await apiRequest(`http://localhost:5501/api/produtos/${id}`, 'PUT', item);
+      await apiRequest(`http://localhost:5502/api/produtos/${id}`, 'PUT', item);
       itens = itens.map((i) => (i.id === id ? item : i)); // Atualiza localmente
     } else {
       // Criar novo item
-      const newItem = await apiRequest('http://localhost:5501/api/produtos', 'POST', item);
+      const newItem = await apiRequest('http://localhost:5502/api/produtos', 'POST', item);
       itens.push(newItem); // Adiciona o novo item retornado
     }
 
@@ -118,7 +109,7 @@ btnSalvar.onclick = async (e) => {
 // Função para deletar um item
 async function deleteItem(index) {
   try {
-    await fetch(`http://localhost:5501/api/produtos/${itens[index].id}`, { method: 'DELETE' });
+    await fetch(`http://localhost:5502/api/produtos/${itens[index].id}`, { method: 'DELETE' });
     itens.splice(index, 1); // Remove localmente
     loadItens();
   } catch (error) {
