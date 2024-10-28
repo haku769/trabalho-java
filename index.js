@@ -5,6 +5,10 @@ const mysql = require('mysql2');
 const app = express();
 const router = express.Router();
 
+const corsOption = {
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+} ;
 
 app.use(express.json());
 app.use(cors());
@@ -97,23 +101,20 @@ router.post('/api/login', (req, res) => {
   });
 });
 
-// Endpoint para o registro
 router.post('/api/usuarios', (req, res) => {
-  var usuario = req.body;
-  var sql = '';
-  if (usuario.id) {
-      sql = `UPDATE usuario SET email = '${usuario.email}', 
-      senha = '${usuario.senha}', status = '${usuario.status ? 1 : 0}' 
-      WHERE id = ${usuario.id}`;
-  } else {
-      sql = `INSERT INTO usuario (email, senha, status) VALUES 
-  ('${usuario.email}', '${usuario.senha}', '${usuario.status ? 1 : 0}')`;
-  }
-  con.query(sql, function (err, result) {
-      if (err) throw err;
+  const { email, senha } = req.body;
+  
+  const sql = "INSERT INTO usuario (email, senha) VALUES (?, ?)";
+  
+  con.query(sql, [email, senha], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: "Erro ao criar usuário", err });
+    }
+    res.status(201).json({ message: "Usuário cadastrado com sucesso" });
   });
-  res.status(201).json(usuario);
 });
+
+
 
 
 /* ---------------------------------

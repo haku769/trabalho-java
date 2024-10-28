@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registro de Conta</title>
-    <link rel="stylesheet" href="/pages/registro.css" />
+    <link rel="stylesheet" href="registro.css" />
     <script>
       async function cadastrarUsuario(email, senha, status) {
   try {
-    const response = await fetch('/api/usuarios', {
+    const response = await fetch('http://localhost:5502/api/usuarios', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -54,13 +54,13 @@
           console.log(JSON.stringify(data));
 
           // Envia a requisição ao backend
-          const response = await fetch(`/api/usuarios`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          });            
+          const response = await fetch(`http://localhost:5502/api/usuarios`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });           
 
           // Verifica a resposta
           if (!response.ok) {
@@ -103,7 +103,7 @@
             required
           />
 
-          <button onclick="cadastrarUsuario()" type="button">Registrar</button>
+          <button onclick="salvar()" type="button">Registrar</button>
         </form>
         <ul id="lista"></ul>
       </main>
