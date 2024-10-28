@@ -80,18 +80,9 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
-<<<<<<< HEAD
   "description": ""
-=======
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.0",
-    "mysql": "^2.18.1",
-    "mysql2": "^3.11.3"
-  }
->>>>>>> a77b071a6aa1b89eb69149c28727cc7cde4081b8
 }

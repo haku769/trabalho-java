@@ -37,7 +37,7 @@ const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
 const carregarUsuario = async (id) => {
   try {
     const usuario = await apiRequest(
-      `http://localhost:5502/api/usuario`,
+      `http://localhost:5502/api/usuario/${id}`,
 
       "GET"
     );
@@ -151,6 +151,11 @@ btnSalvar.onclick = async (e) => {
       // Criar novo item
       const newUser = await apiRequest('http://localhost:5502/api/usuario', 'POST', user);
       itens.push(newUser); // Adiciona o novo item retornado pela API
+      if (!newUser.id) {
+        throw new Error("Erro: a API não retornou um ID para o novo usuário.");
+      }
+      itens.push(newUser);
+      
     }
 
     setItensBD();

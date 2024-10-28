@@ -5,6 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registro de Conta</title>
     <link rel="stylesheet" href="/pages/registro.css" />
+    <script>
+      async function cadastrarUsuario(email, senha, status) {
+  try {
+    const response = await fetch('/api/usuarios', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, senha, status }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      alert('Usuário cadastrado com sucesso!');
+      //window.location.href = '/TelaInicial/telainicial.html';//
+    } else {
+      alert('Erro ao cadastrar o usuário.');
+    }
+  } catch (error) {
+    console.error('Erro:', error);
+    alert('Erro ao enviar os dados. Tente novamente.');
+  }
+}
+      const salvar = async () => {
+        console.log('salvar...');
+
+        // Corrigindo os IDs dos elementos para corresponder ao HTML
+        const nome = document.getElementById('m-nome').value;
+        const email = document.getElementById('m-Email').value;
+        const senha = document.getElementById('password').value;
+        const confirmesenha = document.getElementById('confirm-password').value;
+
+        // Verifica se as senhas coincidem
+        if (senha !== confirmesenha) {
+          alert("As senhas não coincidem.");
+          return;
+        }
+
+        // Prepara o objeto para envio
+        const data = {                
+          nome: nome,
+          email: email,
+          senha: senha,
+        };
+
+        try {
+          console.log(JSON.stringify(data));
+
+          // Envia a requisição ao backend
+          const response = await fetch(`/api/usuarios`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });            
+
+          // Verifica a resposta
+          if (!response.ok) {
+            throw new Error(`Erro na solicitação: ${response.status}`);
+          }
+
+          const result = await response.json();
+          console.log(result);
+          alert("Usuário registrado com sucesso!"); // Exibe mensagem de sucesso
+        } catch (error) {
+          console.error("Erro ao salvar:", error);
+          alert("Erro ao salvar o usuário. Tente novamente."); // Mensagem de erro
+        }
+      };
+    </script>
   </head>
 
   <body>
@@ -15,14 +86,11 @@
 
       <main>
         <form class="registration-form">
-          <label for="name">Nome:</label>
-          <input type="text" id="name" name="name" required />
+          <label for="nome">Nome:</label>
+          <input type="text" id="m-nome" name="name" required />
 
           <label for="email">E-mail:</label>
-          <input type="email" id="email" name="email" required />
-
-          <label for="m-CPF">CPF</label>
-          <input id="m-CPF" type="number" required />
+          <input type="email" id="m-Email" name="email" required />
 
           <label for="password">Senha:</label>
           <input type="password" id="password" name="password" required />
@@ -35,11 +103,9 @@
             required
           />
 
-          <button type="submit">Registrar</button>
+          <button onclick="cadastrarUsuario()" type="button">Registrar</button>
         </form>
         <ul id="lista"></ul>
-
-        <script></script>
       </main>
 
       <footer>

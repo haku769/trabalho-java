@@ -22,7 +22,7 @@ const apiRequest = async (url, method, body) => {
 // Função para carregar os itens da API
 const loadItens = async () => {
   try {
-    itens = await apiRequest('http://localhost:5502/api/produtos', 'GET');
+    itens = await apiRequest('http://localhost:5502/api/crudProdutos', 'GET');
     tbody.innerHTML = '';
     itens.forEach((item, index) => {
       insertItem(item, index);
@@ -91,11 +91,11 @@ btnSalvar.onclick = async (e) => {
   try {
     if (id !== null) {
       // Atualizar item existente
-      await apiRequest(`http://localhost:5502/api/produtos/${id}`, 'PUT', item);
+      await apiRequest(`http://localhost:5502/api/crudProdutos/${id}`, 'PUT', item);
       itens = itens.map((i) => (i.id === id ? item : i)); // Atualiza localmente
     } else {
       // Criar novo item
-      const newItem = await apiRequest('http://localhost:5502/api/produtos', 'POST', item);
+      const newItem = await apiRequest('http://localhost:5502/api/crudProdutos', 'POST', item);
       itens.push(newItem); // Adiciona o novo item retornado
     }
 
@@ -109,7 +109,7 @@ btnSalvar.onclick = async (e) => {
 // Função para deletar um item
 async function deleteItem(index) {
   try {
-    await fetch(`http://localhost:5502/api/produtos/${itens[index].id}`, { method: 'DELETE' });
+    await fetch(`http://localhost:5502/api/crudProdutos/${itens[index].id}`, { method: 'DELETE' });
     itens.splice(index, 1); // Remove localmente
     loadItens();
   } catch (error) {
