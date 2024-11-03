@@ -35,7 +35,7 @@ const produtos = [];
    ROTAS PARA USUÁRIOS
 --------------------------------- */
 
-// Rota para obter todos os usuários
+
 
 // Rota para obter todos os usuários
 router.get("/api/usuarios", (req, res) => {
@@ -46,27 +46,7 @@ router.get("/api/usuarios", (req, res) => {
   });
 });
 
-// Rota para criar ou atualizar um usuário
-//router.post("/api/usuarios", (req, res) => {
-  //const usuario = req.body;
-  //let sql;
-  //if (usuario.id) {
-    // Atualiza usuário existente
-    //sql = `UPDATE usuario SET email = ?, senha = ?, status = ? WHERE id = ?`;
-    //con.query(sql, [usuario.email, usuario.senha, usuario.status ? 1 : 0, usuario.id], (err, result) => {
-      //if (err) throw err;
-      //res.status(200).json({ message: "Usuário atualizado", usuario }); // Sucesso
-    //});
-  //} else {
-    // Cria novo usuário
-    //sql = `INSERT INTO usuario (email, senha, status) VALUES (?, ?, ?)`;
-   // con.query(sql, [usuario.email, usuario.senha, usuario.status ? 1 : 0], (err, result) => {
-    //  if (err) throw err;
-    //  usuario.id = result.insertId;
-     // res.status(201).json({ message: "Usuário criado", usuario }); // Sucesso, recurso criado
-    //});
- // }
-//});
+
 
 // Rota para capturar um usuário por ID
 router.get("/api/usuarios/:id", (req, res) => {
