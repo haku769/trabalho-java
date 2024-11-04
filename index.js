@@ -73,12 +73,24 @@ router.delete("/api/usuarios/:id", (req, res) => {
 // Endpoint para o login
 router.post('/api/login', (req, res) => {
   const { email, senha } = req.body;
-  const sql = `SELECT id, email FROM usuario WHERE email = ? AND senha = ? AND status = 1`;
-  con.query(sql, [email, senha], (err, result) => {
-    if (err) throw err;
-    if (result.length === 0) return res.status(404).json({ message: "Login inválido" }); // Falha: login inválido
-    res.status(200).json(result[0]); // Sucesso
-  });
+  
+  // Verifica no banco de dados se o email e a senha correspondem a um usuário
+  let sql = `SELECT * FROM usuario WHERE email = '${email}' AND senha = '${senha}'`;
+  
+  con.query(sql, function (err, result) {
+      if (err) {
+          console.error('Erro ao consultar o banco de dados:', err);
+          return res.status(500).json({ message: 'Erro no servidor' });
+      }
+
+      if (result.length > 0) {
+          // Se encontrou um usuário com as credenciais fornecidas, retorna sucesso
+          res.status(200).json({ message: 'Login bem-sucedido', usuario: result[0] });
+      } else {
+          // Senão, retorna erro de credenciais inválidas
+          res.status(401).json({ message: 'Credenciais inválidas' });
+      }
+    });
 });
 
 router.post('/api/usuarios', (req, res) => {
@@ -101,55 +113,89 @@ router.post('/api/usuarios', (req, res) => {
    ROTAS PARA PRODUTOS
 --------------------------------- */
 
-// Rota para obter todos os produtos
-router.get("/api/crudProdutos", (req, res) => {
-  res.status(200).json(produtos); // Sucesso
+router.get("/api/crudProdutos", async (req, res) => {
+  try {
+    const [produtos] = await db.execute("SELECT * FROM produtos");
+    res.status(200).json(produtos); // Sucesso
+  } catch (error) {
+    console.error("Erro ao buscar produtos:", error);
+    res.status(500).json({ message: "Erro ao buscar produtos" }); // Falha
+  }
 });
 
 // Rota para obter um produto pelo ID
-router.get("/api/crudProdutos/:id", (req, res) => {
+router.get("/api/crudProdutos/:id", async (req, res) => {
   const { id } = req.params;
-  const produto = produtos.find(produto => produto.id == id);
+  try {
+    const [produto] = await db.execute("SELECT * FROM produtos WHERE id = ?", [id]);
 
-  if (produto) {
-    return res.status(200).json(produto); // Sucesso
+    if (produto.length > 0) {
+      return res.status(200).json(produto[0]); // Sucesso
+    }
+
+    return res.status(404).json({ message: "Produto não encontrado" }); // Falha
+  } catch (error) {
+    console.error("Erro ao buscar produto:", error);
+    res.status(500).json({ message: "Erro ao buscar produto" }); // Falha
   }
-
-  return res.status(404).json({ message: "Produto não encontrado" }); // Falha: produto não encontrado
 });
 
 // Rota para criar um novo produto
-router.post("/api/crudProdutos", (req, res) => {
-  const novoProduto = req.body;
-  novoProduto.id = produtos.length + 1;
-  produtos.push(novoProduto);
-  res.status(201).json(novoProduto); // Sucesso, recurso criado
+router.post("/api/crudProdutos", async (req, res) => {
+  const { nome, codigo, preco } = req.body;
+
+  try {
+    const [result] = await db.execute(
+      "INSERT INTO produtos (nome, codigo, preco) VALUES (?, ?, ?)",
+      [nome, codigo, preco]
+    );
+    const novoProduto = { id: result.insertId, nome, codigo, preco };
+    res.status(201).json(novoProduto); // Sucesso, recurso criado
+  } catch (error) {
+    console.error("Erro ao criar produto:", error);
+    res.status(500).json({ message: "Erro ao criar produto" }); // Falha
+  }
 });
 
 // Rota para atualizar um produto existente
-router.put("/api/crudProdutos/:id", (req, res) => {
+router.put("/api/crudProdutos/:id", async (req, res) => {
   const { id } = req.params;
-  const produtoIndex = produtos.findIndex(produto => produto.id == id);
+  const { nome, codigo, preco } = req.body;
 
-  if (produtoIndex !== -1) {
-    produtos[produtoIndex] = { ...produtos[produtoIndex], ...req.body };
-    return res.status(200).json(produtos[produtoIndex]); // Sucesso
+  try {
+    const [result] = await db.execute(
+      "UPDATE produtos SET nome = ?, codigo = ?, preco = ? WHERE id = ?",
+      [nome, codigo, preco, id]
+    );
+
+    if (result.affectedRows > 0) {
+      const [produtoAtualizado] = await db.execute("SELECT * FROM produtos WHERE id = ?", [id]);
+      return res.status(200).json(produtoAtualizado[0]); // Sucesso
+    }
+
+    return res.status(404).json({ message: "Produto não encontrado" }); // Falha
+  } catch (error) {
+    console.error("Erro ao atualizar produto:", error);
+    res.status(500).json({ message: "Erro ao atualizar produto" }); // Falha
   }
-
-  return res.status(404).json({ message: "Produto não encontrado" }); // Falha: produto não encontrado
 });
 
 // Rota para deletar um produto
-router.delete("/api/crudProdutos/:id", (req, res) => {
+router.delete("/api/crudProdutos/:id", async (req, res) => {
   const { id } = req.params;
-  const produtoIndex = produtos.findIndex(produto => produto.id == id);
 
-  if (produtoIndex !== -1) {
-    produtos.splice(produtoIndex, 1);
-    return res.status(204).send(); // Sucesso, sem conteúdo
+  try {
+    const [result] = await db.execute("DELETE FROM produtos WHERE id = ?", [id]);
+
+    if (result.affectedRows > 0) {
+      return res.status(204).send(); // Sucesso, sem conteúdo
+    }
+
+    return res.status(404).json({ message: "Produto não encontrado" }); // Falha
+  } catch (error) {
+    console.error("Erro ao deletar produto:", error);
+    res.status(500).json({ message: "Erro ao deletar produto" }); // Falha
   }
-
-  return res.status(404).json({ message: "Produto não encontrado" }); // Falha
 });
 
 /* ---------------------------------

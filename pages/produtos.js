@@ -8,17 +8,6 @@ const btnSalvar = document.querySelector("#btnSalvar");
 let itens = [];
 let id = null;
 
-// Função genérica para chamadas de API
-const apiRequest = async (url, method, body) => {
-  try {
-    const response = await fetch(url, { method, body: body ? JSON.stringify(body) : undefined });
-    return await response.json();
-  } catch (error) {
-    console.error('Erro   na requisição:', error);
-    throw error;
-  }
-};
-
 // Função para carregar os itens da API
 const loadItens = async () => {
   try {
