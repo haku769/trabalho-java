@@ -11,13 +11,26 @@ let id = null;
 // Função genérica para chamadas de API
 const apiRequest = async (url, method, body) => {
   try {
-    const response = await fetch(url, { method, body: body ? JSON.stringify(body) : undefined });
-    return await response.json();
+    const response = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    
+    // Verifica se o conteúdo da resposta é JSON
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      return await response.json();
+    } else {
+      console.error("A resposta não é JSON:", await response.text());
+      throw new Error("Resposta inválida. Esperava JSON.");
+    }
   } catch (error) {
-    console.error('Erro   na requisição:', error);
+    console.error('Erro na requisição:', error);
     throw error;
   }
 };
+
 
 // Função para carregar os itens da API
 const loadItens = async () => {
@@ -44,7 +57,7 @@ function openModal(edit = false, index = 0) {
 
   if (edit) {
     sNome.value = itens[index].nome;
-    sCategoria.value = itens[index].Categoria;
+    sCategoria.value = itens[index].categoria;
     sDescricao.value = itens[index].descricao;
     id = itens[index].id; // Mantém o ID do item para edição
   } else {
@@ -60,7 +73,7 @@ function insertItem(item, index) {
   const tr = document.createElement("tr");
   tr.innerHTML = `
     <td>${item.nome}</td>
-    <td>${item.Categoria}</td>
+    <td>${item.categoria}</td>
     <td>${item.descricao}</td>
     <td class="acao">
       <button onclick="editItem(${index})"><i class='bx bx-edit'></i></button>
@@ -92,11 +105,13 @@ btnSalvar.onclick = async (e) => {
     if (id !== null) {
       // Atualizar item existente
       await apiRequest(`http://localhost:5502/api/crudProdutos/${id}`, 'PUT', item);
-      itens = itens.map((i) => (i.id === id ? item : i)); // Atualiza localmente
+      itens = itens.map((i) => (i.id === id ? { id, ...item } : i)); // Atualiza localmente
+      alert("Produto atualizado com sucesso !!!!");
     } else {
       // Criar novo item
       const newItem = await apiRequest('http://localhost:5502/api/crudProdutos', 'POST', item);
-      itens.push(newItem); // Adiciona o novo item retornado
+      itens.push(newItem); // adiciona um novo item
+      alert("Produto cadastrado com sucesso !!");
     }
 
     modal.classList.remove("active");
@@ -109,8 +124,9 @@ btnSalvar.onclick = async (e) => {
 // Função para deletar um item
 async function deleteItem(index) {
   try {
-    await fetch(`http://localhost:5502/api/crudProdutos/${itens[index].id}`, { method: 'DELETE' });
+    await apiRequest(`http://localhost:5502/api/crudProdutos/${itens[index].id}`, 'DELETE');
     itens.splice(index, 1); // Remove localmente
+    alert("Produto excluido com sucesso !!");
     loadItens();
   } catch (error) {
     console.error("Erro ao deletar o item:", error);

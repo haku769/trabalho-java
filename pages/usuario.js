@@ -28,9 +28,6 @@ const apiRequest = async (url, method, body = null) => {
   }
 };
 
-// Validação simples de CPF (apenas formato)
-const isValidCPF = (cpf) => /^\d{11}$/.test(cpf);
-
 // Validação simples de Email
 const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
 

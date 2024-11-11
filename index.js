@@ -27,9 +27,6 @@ con.connect((err) => {
   console.log("Conectado ao MySQL!");
 });
 
-// Dados simulados em memória (substitua com interações reais com o banco de dados)
-let idUsuarios = [];
-const produtos = [];
 
 /* ---------------------------------
    ROTAS PARA USUÁRIOS
@@ -73,13 +70,23 @@ router.delete("/api/usuarios/:id", (req, res) => {
 // Endpoint para o login
 router.post('/api/login', (req, res) => {
   const { email, senha } = req.body;
-  const sql = `SELECT id, email FROM usuario WHERE email = ? AND senha = ? AND status = 1`;
-  con.query(sql, [email, senha], (err, result) => {
-    if (err) throw err;
-    if (result.length === 0) return res.status(404).json({ message: "Login inválido" }); // Falha: login inválido
-    res.status(200).json(result[0]); // Sucesso
-  });
+  let sql = `SELECT * FROM usuario WHERE email = '${email}' AND senha = '${senha}'`;
+  
+  con.query(sql, function (err, result) {
+      if (err) {
+          console.error('Erro ao consultar o banco de dados:', err);
+          return res.status(500).json({ message: 'Erro no servidor' });
+      }
+      if (result.length > 0) {
+          // Se encontrou um usuário com as credenciais fornecidas, retorna sucesso
+          res.status(200).json({ message: 'Login bem-sucedido', usuario: result[0] });
+      } else {
+          // Senão, retorna erro de credenciais inválidas
+          res.status(401).json({ message: 'Credenciais inválidas' });
+      }
+    });
 });
+// registro de usuario
 
 router.post('/api/usuarios', (req, res) => {
   const { email, senha } = req.body;
@@ -102,54 +109,42 @@ router.post('/api/usuarios', (req, res) => {
 --------------------------------- */
 
 // Rota para obter todos os produtos
-router.get("/api/crudProdutos", (req, res) => {
-  res.status(200).json(produtos); // Sucesso
-});
-
-// Rota para obter um produto pelo ID
-router.get("/api/crudProdutos/:id", (req, res) => {
-  const { id } = req.params;
-  const produto = produtos.find(produto => produto.id == id);
-
-  if (produto) {
-    return res.status(200).json(produto); // Sucesso
-  }
-
-  return res.status(404).json({ message: "Produto não encontrado" }); // Falha: produto não encontrado
+router.get('/api/crudProdutos', (req, res) => {
+  con.query('SELECT * FROM produtos', (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
 });
 
 // Rota para criar um novo produto
-router.post("/api/crudProdutos", (req, res) => {
-  const novoProduto = req.body;
-  novoProduto.id = produtos.length + 1;
-  produtos.push(novoProduto);
-  res.status(201).json(novoProduto); // Sucesso, recurso criado
+router.post('/api/crudProdutos', (req, res) => {
+  const { nome, categoria, descricao } = req.body;
+  const sql = 'INSERT INTO produtos (nome, categoria, descricao) VALUES (?, ?, ?)';
+  con.query(sql, [nome, categoria, descricao], (err, result) => {
+    if (err) throw err;
+    res.json({ id: result.insertId, nome, categoria, descricao });
+  });
 });
 
-// Rota para atualizar um produto existente
-router.put("/api/crudProdutos/:id", (req, res) => {
+// Rota para atualizar um produto
+router.put('/api/crudProdutos/:id', (req, res) => {
+  const { nome, categoria, descricao } = req.body;
   const { id } = req.params;
-  const produtoIndex = produtos.findIndex(produto => produto.id == id);
-
-  if (produtoIndex !== -1) {
-    produtos[produtoIndex] = { ...produtos[produtoIndex], ...req.body };
-    return res.status(200).json(produtos[produtoIndex]); // Sucesso
-  }
-
-  return res.status(404).json({ message: "Produto não encontrado" }); // Falha: produto não encontrado
+  const sql = 'UPDATE produtos SET nome = ?, categoria = ?, descricao = ? WHERE id = ?';
+  con.query(sql, [nome, categoria, descricao, id], (err) => {
+    if (err) throw err;
+    res.json({ id, nome, categoria, descricao });
+  });
 });
 
 // Rota para deletar um produto
-router.delete("/api/crudProdutos/:id", (req, res) => {
+router.delete('/api/crudProdutos/:id', (req, res) => {
   const { id } = req.params;
-  const produtoIndex = produtos.findIndex(produto => produto.id == id);
-
-  if (produtoIndex !== -1) {
-    produtos.splice(produtoIndex, 1);
-    return res.status(204).send(); // Sucesso, sem conteúdo
-  }
-
-  return res.status(404).json({ message: "Produto não encontrado" }); // Falha
+  const sql = 'DELETE FROM produtos WHERE id = ?';
+  con.query(sql, [id], (err) => {
+    if (err) throw err;
+    res.json({ id });
+  });
 });
 
 /* ---------------------------------
