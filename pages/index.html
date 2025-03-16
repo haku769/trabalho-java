@@ -1,48 +1,123 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Loja de Bicicletas - Encontre os melhores modelos de bicicletas e acessórios." />
-    <title>Loja de Bicicletas</title>
-    <link rel="stylesheet" href="/pages/styles.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AutoElite - Encontre os melhores modelos de carros novos e seminovos." />
+  <title>AutoElite - Loja de Carros</title>
+  <link rel="stylesheet" href="/pages/styles.css" />
+</head>
 
-  <body>
-    <header>
-      <h1>Loja de Bicicletas</h1>
-      <nav class="fundo">
-        <ul>
-          <li><a href="/pages/index.html">Início</a></li>
-          <li><a href="/pages/produtos.html">Produtos</a></li>
-          <li><a href="/pages/registro.html">Registrar</a></li>
-          <li><a href="/pages/usuario.html">Usuário</a></li>
-          <li><a href="/pages/crudProdutos.html">Cadastro Produtos</a></li>
-        </ul>
-      </nav>
-    </header>
+<body>
+  <!-- Cabeçalho e Navegação -->
+  <header>
+    <h1>AutoElite</h1>
+    <nav class="fundo">
+      <ul>
+        <li><a href="/pages/index.html">Início</a></li>
+        <li><a href="/pages/veiculos.html">Veículos</a></li>
+        <li><a href="/pages/financiamento.html">Financiamento</a></li>
+        <li><a href="/pages/contato.html">Contato</a></li>
+        <li><a href="/pages/admin.html">Área do Vendedor</a></li>
+      </ul>
+    </nav>
+  </header>
 
-
+  <!-- Seção Principal com Imagens -->
+  <main>
+    <div class="hero-section" style="background-image: linear-gradient(rgba(29, 53, 87, 0.8), rgba(29, 53, 87, 0.8)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+      <h2>Encontre o carro dos seus sonhos</h2>
+      <p>Qualidade, confiança e as melhores condições do mercado</p>
+    </div>
 
     <div class="links">
       <div class="image-container">
-        <img src="/images/imgBike.jpg" alt="Bicicletas">
+        <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Carros Novos">
+        <button onclick="window.location.href='/pages/veiculos.html?categoria=novos'">Carros Novos</button>
       </div>
-    
+      
       <div class="image-container">
-        <img src="/images/vestiario.bike.jpg" alt="Vestiario">
-        <button onclick="window.location.href='/pages/produtos.html'">Ver Vestiario</button>
+        <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Carros Seminovos">
+        <button onclick="window.location.href='/pages/veiculos.html?categoria=seminovos'">Seminovos</button>
       </div>
-    
+      
       <div class="image-container">
-        <img src="/images/equipamentosbike.jpg" alt="Equipamentos">
+        <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="SUVs e Picapes">
+        <button onclick="window.location.href='/pages/veiculos.html?categoria=suvs'">SUVs e Picapes</button>
       </div>
     </div>
-    
+
+    <section class="featured-section">
+      <h2>Destaques da Semana</h2>
+      <div class="products">
+        <div class="product">
+          <img src="https://images.unsplash.com/photo-1590362891991-f776e747a588?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Honda Civic 2023">
+          <h3>Honda Civic 2023</h3>
+          <p class="price">R$ 149.900,00</p>
+          <p>Automático, 2.0, completo, apenas 15.000 km</p>
+          <button class="btn-details">Ver Detalhes</button>
+        </div>
+        <div class="product">
+          <img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Toyota Corolla 2022">
+          <h3>Toyota Corolla 2022</h3>
+          <p class="price">R$ 139.900,00</p>
+          <p>Automático, 2.0 Flex, único dono, revisado</p>
+          <button class="btn-details">Ver Detalhes</button>
+        </div>
+        <div class="product">
+          <img src="/images/jeep.compass.webp" alt="Jeep Compass 2023">
+          <h3>Jeep Compass 2023</h3>
+          <p class="price">R$ 189.900,00</p>
+          <p>4x4, diesel, teto solar, multimídia completa</p>
+          <button class="btn-details">Ver Detalhes</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="services-section">
+      <h2>Nossos Serviços</h2>
+      <div class="services">
+        <div class="service-card">
+          <span class="icon">🚗</span>
+          <h3>Test Drive</h3>
+          <p>Agende um test drive e experimente o veículo antes de comprar</p>
+        </div>
+        <div class="service-card">
+          <span class="icon">💰</span>
+          <h3>Financiamento</h3>
+          <p>As melhores taxas do mercado com aprovação rápida</p>
+        </div>
+        <div class="service-card">
+          <span class="icon">🔄</span>
+          <h3>Troca com Troco</h3>
+          <p>Avaliamos seu veículo na hora e pagamos o melhor preço</p>
+        </div>
+      </div>
+    </section>
+  </main>
   
-    
-    <footer>
-      <p>&copy; 2024 Loja de Bicicletas. Todos os direitos reservados.</p>
-    </footer>
-  </body>
+  <!-- Rodapé -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>AutoElite</h3>
+        <p>Sua concessionária de confiança desde 2010</p>
+      </div>
+      <div class="footer-section">
+        <h3>Contato</h3>
+        <p>📞 (11) 3456-7890</p>
+        <p>✉️ contato@autoelite.com.br</p>
+      </div>
+      <div class="footer-section">
+        <h3>Horário de Funcionamento</h3>
+        <p>Segunda a Sexta: 8h às 19h</p>
+        <p>Sábados: 9h às 16h</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 AutoElite. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+</body>
 </html>
+
